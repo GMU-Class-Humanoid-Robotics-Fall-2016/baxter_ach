@@ -56,7 +56,8 @@ class ach_baxter_interface(object):
         leftAngles = {}
         rightAngles = {}
 
-        thetaOffset = np.array([0.,0.,0.,0.,0.,0.,0.])
+        thetaOffsetRight = np.array([np.pi/4.,0.,0.,np.pi/2.,0.,0.,0.])
+        thetaOffsetLeft = np.array([-np.pi/4.,0.,0.,np.pi/2.,0.,0.,0.])
         offsetInds = np.array([0,1,2,3,4,5,6])
 
 
@@ -71,8 +72,8 @@ class ach_baxter_interface(object):
             # W1 = 5
             # W2 = 6
 
-            leftAngles.update({leftJointName[i] : robot.arm[LEFT_ARM].joint[i].ref})
-            rightAngles.update({rightJointName[i] : robot.arm[RIGHT_ARM].joint[i].ref})
+            leftAngles.update({leftJointName[i] : robot.arm[LEFT_ARM].joint[i].ref + thetaOffsetLeft[i]})
+            rightAngles.update({rightJointName[i] : robot.arm[RIGHT_ARM].joint[i].ref + thetaOffsetRight[i]})
 
 
 
