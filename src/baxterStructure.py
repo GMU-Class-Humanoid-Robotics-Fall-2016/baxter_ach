@@ -18,18 +18,18 @@ RIGHT_ARM	= 1
 #rj = right.joint_names() = ['right_s0', 'right_s1', 'right_e0', 'right_e1', 'right_w0', 'right_w1', 'right_w2']
 
 class JOINT(Structure):
-	_pack = 1
+	_pack_ = 1
 	_fields_ = [("ref", c_double),
 			("pos", c_double),
 			("torque", c_double)]
 			
 class ARM(Structure):
-	_pack = 1
+	_pack_ = 1
 	_fields_ = [("joint", JOINT*BAXTER_NUM_ARM_JOINTS)]
 	
 
 class ROBOT(Structure):
-	_pack = 1
-	_fields = [("currTime", c_double),
+	_pack_ = 1
+	_fields_ = [("currTime", c_double),
 		("arm", ARM * BAXTER_NUM_ARMS)]
 
