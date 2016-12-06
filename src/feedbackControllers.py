@@ -33,6 +33,9 @@ def PID(input):
     integralReturn = input.integration + input.curError
     integral = integralReturn * input.pi
 
-    return gain+derivative+integral , integralReturn
+    input.prevError = input.curError
+    input.integration = integralReturn
+
+    return gain+derivative+integral , input
 
 

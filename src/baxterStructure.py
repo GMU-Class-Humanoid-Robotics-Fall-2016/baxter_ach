@@ -33,3 +33,8 @@ class ROBOT(Structure):
 	_fields_ = [("currTime", c_double),
 		("arm", ARM * BAXTER_NUM_ARMS)]
 
+class IMAGE(Structure):
+	_pack_ = 1
+	_fields_ = [("vertical",c_double),
+				("horizontal",c_double)]
+
