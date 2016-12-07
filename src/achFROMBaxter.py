@@ -18,7 +18,7 @@ class ach_FROM_Baxter_Interface(input):
 
     def __init__(self):
         rp.init_node('from_baxter' , anonymous=True)
-        runRate = rp.Rate(rp.get_param('~runRate' , default = '100'))
+        runRate = rp.Rate(int(rp.get_param('~runRate' , default = '100')))
 
         jointStateCallback = rp.Subscriber('/robot/joint_states')
 

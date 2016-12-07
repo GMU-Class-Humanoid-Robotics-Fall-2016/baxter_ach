@@ -19,7 +19,7 @@ class ach_TO_Baxter_Interface(input):
 
     def __init__(self):
         rp.init_node('to_baxter' , anonymous=True)
-        runRate = rp.Rate(rp.get_param('~runRate' , anonymous=True))
+        runRate = rp.Rate(int(rp.get_param('~runRate' , default=100)))
         leftArm = bi.Limb("left")
         rightArm = bi.Limb("right")
         robot = ROBOT()
@@ -41,8 +41,6 @@ class ach_TO_Baxter_Interface(input):
 
     def _BaxterDictionary( self , leftArm , rightArm , robot ):
 
-        robot = ROBOT()
-
         leftJointName = leftArm.joint_names()
         rightJointName = rightArm.joint_names()
 
@@ -50,8 +48,8 @@ class ach_TO_Baxter_Interface(input):
         rightAngles = []
 
         for i in range(BAXTER_NUM_ARM_JOINTS):
-            leftAngles.update({leftJointName[i]: robot.arm[LEFT_ARM].joint[i].ref + thetaOffsetLeft[i]})
-            rightAngles.update({rightJointName[i]: robot.arm[RIGHT_ARM].joint[i].ref + thetaOffsetLeft[i]})
+            leftAngles.update({leftJointName[i]: robot.arm[LEFT_ARM].joint[i].ref})
+            rightAngles.update({rightJointName[i]: robot.arm[RIGHT_ARM].joint[i].ref})
 
         return leftAngles , rightAngles
 
