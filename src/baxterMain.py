@@ -70,7 +70,7 @@ class baxterMain(object):
             dhMatLeft[i,0] = fromMsg.arm[LEFT_ARM].joint[i].ref
             dhMatRight[i,0] = fromMsg.arm[RIGHT_ARM].joint[i].ref
 
-        
+
 
 
         while not rp.is_shutdown():
