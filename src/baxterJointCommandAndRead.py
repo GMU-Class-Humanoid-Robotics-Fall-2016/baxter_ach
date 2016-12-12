@@ -4,7 +4,7 @@ import sys
 import rospy
 import baxter_interface as bi
 import ach
-#import baxterStructure
+import baxterStructure
 
 def toBaxterDictionary(baxterDataRef):
 	lj = left.joint_names()  
@@ -26,7 +26,7 @@ def main():
 	
 	rate = rospy.Rate(1000)
 	
-	 while not rospy.is_shutdown():
+	while not rospy.is_shutdown():
 		 [statuss, frameSizes] = r.get(baxterDataRef, wait = True, last = True)
 		 
 		 

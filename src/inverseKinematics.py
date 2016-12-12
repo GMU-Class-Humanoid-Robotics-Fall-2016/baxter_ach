@@ -10,26 +10,32 @@
 import numpy as np
 from dhMatrix import dhMatrixCalculation
 
-def inverseKinematics(dhMat,error):
 
-    print 'asdf'
+def getJacobian(deltaTheta , dh):
+    out = np.zeros([3 , np.shape(dh)[0]])
+
+    for i in range(np.shape(out)[1]):
+        newCurrent = dh[0,i] + deltaTheta
+
+        output = dhMatrixCalculation(newCurrent)
+
+        out[:,i] = (np.dot(output[0:3,0:3], output[0:3,3])) / deltaTheta
+
+    return out
+
+def inverseKinematics(deltaTheta , dh , error , goal):
+
+    jacobian = getJacobian(deltaTheta , dh)
+    jacobian = np.linalg.pinv(jacobian)
+    nStep = nextStep(step , error , goal)
+
+    return  np.dot(jacobian,nStep)
 
 
+def nextStep(stepSize , distance , goal):
+    current = dhMatrixCalculation(dh)
+    dx = (goal[0] - current[0]) * stepSize / distance
+    dy = (goal[1] - current[1]) * stepSize / distance
+    dz = (goal[2] - current[2]) * stepSize / distance
 
-
-# lSideJacobian = np.linalg.pinv(lSideJacobian)
-# rSideJacobian = np.linalg.pinv(rSideJacobian)
-#
-# leftNextStep = self._nextStep(step, leftError, state, s, 'L', leftGoal[goal,])
-# rightNextStep = self._nextStep(step, rightError, state, s, 'R', rightGoal[goal,])
-#
-# lThetaUpdate = np.dot(lSideJacobian, leftNextStep)
-# rThetaUpdate = np.dot(rSideJacobian, rightNextStep)
-
-def _nextStep(self,step,distance,state,s,side,goal):
-    current = self._getFK(0,False,side,state,s)
-    dx = (goal[0] - current[0]) * step / distance
-    dy = (goal[1] - current[1]) * step / distance
-    dz = (goal[2] - current[2]) * step / distance
-
-    return np.transpose(np.array([dx,dy,dz]))
+    return np.transpose(np.array([dx , dy , dz]))

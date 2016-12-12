@@ -16,8 +16,8 @@ def main():
 	#s = ach.Channel("baxterState")
 
 	for i in range(BAXTER_NUM_ARM_JOINTS):
-		baxterDataRef.arm[LEFT_ARM].joint[i].ref = 0.0
-		baxterDataRef.arm[RIGHT_ARM].joint[i].ref = 0.0
+		baxterDataRef.arm[LEFT_ARM].joint[i].ref = -0.4
+		baxterDataRef.arm[RIGHT_ARM].joint[i].ref = -0.4
 
 	while True:
 		baxterDataRef.currTime = time.time()

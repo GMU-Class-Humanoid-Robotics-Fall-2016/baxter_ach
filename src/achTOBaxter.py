@@ -15,20 +15,25 @@ from baxterStructure import *
 import baxter_interface as bi
 import ach
 
-class ach_TO_Baxter_Interface(input):
+class ach_TO_Baxter_Interface(object):
 
     def __init__(self):
         rp.init_node('to_baxter' , anonymous=True)
         runRate = rp.Rate(int(rp.get_param('~runRate' , default=100)))
-        leftArm = bi.Limb("left")
-        rightArm = bi.Limb("right")
+        leftArm = bi.Limb('left')
+        rightArm = bi.Limb('right')
         robot = ROBOT()
-        p = ach.Channel("baxterPosition")
+        p = ach.Channel("baxterRef")
 
         while not rp.is_shutdown():
             [status,frameSizes] = p.get(robot , wait=True , last=True)
 
+
+            print 'here'
+
             leftAngle , rightAngle = self._BaxterDictionary( leftArm , rightArm , robot )
+
+
 
             try:
                 leftArm.move_to_joint_positions(leftAngle)
@@ -44,8 +49,8 @@ class ach_TO_Baxter_Interface(input):
         leftJointName = leftArm.joint_names()
         rightJointName = rightArm.joint_names()
 
-        leftAngles = []
-        rightAngles = []
+        leftAngles = {}
+        rightAngles = {}
 
         for i in range(BAXTER_NUM_ARM_JOINTS):
             leftAngles.update({leftJointName[i]: robot.arm[LEFT_ARM].joint[i].ref})

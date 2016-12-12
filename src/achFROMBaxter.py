@@ -14,13 +14,13 @@ import baxter_interface as bi
 import ach
 from sensor_msgs.msg import JointState
 
-class ach_FROM_Baxter_Interface(input):
+class ach_FROM_Baxter_Interface(object):
 
     def __init__(self):
         rp.init_node('from_baxter' , anonymous=True)
         runRate = rp.Rate(int(rp.get_param('~runRate' , default = '100')))
 
-        jointStateCallback = rp.Subscriber('/robot/joint_states')
+        jointStateCallback = rp.Subscriber('/robot/joint_states' , JointState ,  self._jointStateCallback)
 
         leftArm = bi.Limb("left")
         rightArm = bi.Limb("right")
@@ -44,6 +44,7 @@ class ach_FROM_Baxter_Interface(input):
 
     def _BaxterDictionary( self ,  robot , leftJointName , rightJointName):
 
+        print self.pos
 
         for i in range(BAXTER_NUM_ARM_JOINTS):
             robot.arm[LEFT_ARM].joint[i].ref = self.pos(np.where(leftJointName[i] == self.name))
@@ -58,4 +59,4 @@ class ach_FROM_Baxter_Interface(input):
         self.name = data.name
 
 if __name__ == "__main__":
-    ach_TO_Baxter_Interface()
+    ach_FROM_Baxter_Interface()

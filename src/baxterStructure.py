@@ -19,22 +19,37 @@ RIGHT_ARM	= 1
 
 class JOINT(Structure):
 	_pack_ = 1
-	_fields_ = [("ref", c_double),
-			("pos", c_double),
-			("torque", c_double)]
+	_fields_ = [
+		("ref", c_double),
+		("pos", c_double),
+		("torque", c_double)
+	]
 			
 class ARM(Structure):
 	_pack_ = 1
-	_fields_ = [("joint", JOINT*BAXTER_NUM_ARM_JOINTS)]
+	_fields_ = [
+		("joint", JOINT*BAXTER_NUM_ARM_JOINTS)
+	]
 	
 
 class ROBOT(Structure):
 	_pack_ = 1
-	_fields_ = [("currTime", c_double),
-		("arm", ARM * BAXTER_NUM_ARMS)]
+	_fields_ = [
+		("currTime", c_double),
+		("arm", ARM * BAXTER_NUM_ARMS)
+	]
+
+class IMAGESETUP(Structure):
+	_pack_ = 1
+	_fields_ = [
+		("vertical" , c_double),
+		("horizontal" , c_double)
+	]
 
 class IMAGE(Structure):
 	_pack_ = 1
-	_fields_ = [("vertical",c_double),
-				("horizontal",c_double)]
+	_fields_ = [
+		("arm" , IMAGESETUP * BAXTER_NUM_ARMS),
+				("combined" , IMAGESETUP)
+	]
 
