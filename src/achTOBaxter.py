@@ -23,21 +23,21 @@ class ach_TO_Baxter_Interface(object):
         leftArm = bi.Limb('left')
         rightArm = bi.Limb('right')
         robot = ROBOT()
-        p = ach.Channel("baxterRef")
+        p = ach.Channel("baxterPosition")
 
         while not rp.is_shutdown():
             [status,frameSizes] = p.get(robot , wait=True , last=True)
 
 
-            print 'here'
+            # print 'here'
 
             leftAngle , rightAngle = self._BaxterDictionary( leftArm , rightArm , robot )
 
-
+            print "Received"
 
             try:
                 leftArm.move_to_joint_positions(leftAngle)
-                rightArm.move_to_joint_positions(rightAngle)
+                # rightArm.move_to_joint_positions(rightAngle)
 
             except:
                 pass

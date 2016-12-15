@@ -15,28 +15,46 @@ import numpy as np
 import cv2
 import cv_bridge
 from baxterStructure import *
+from baxter_interface import *
 import ach
 import skimage.morphology as morphology
+import time
 
 class baxterImageProcessing(object):
 
     def __init__(self):
 
         rp.init_node('baxterImageProcessing')
-        p = ach.Channel('baxterImage')
+        # p = ach.Channel('baxterImage')
+
+        # left_camera = CameraController('left_hand_camera')
+        # left_camera.resolution = (640, 400)
+        # left_camera.open()
+        #
+        # right_camera = CameraController('right_hand_camera')
+        # right_camera.resolution = (640 , 400)
+        # right_camera.open
+
+
 
         viewImage = rp.get_param('~view_image' , default=False)
-        color = rp.get_param('~color_to_find' , default="Red") # "Green" "Blue" are the other options
-        rate = rp.Rate(rp.get_param('run_rate' , default=10)) # Run Frequency
+        color = rp.get_param('~color_to_find' , default="Green") # "Green" "Blue" are the other options
+        rate = rp.Rate(10)#rp.Rate(rp.get_param('run_rate' , default=10)) # Run Frequency
 
-        self.bridge = cv_bridge.CvBridge
+        self.bridge = cv_bridge.CvBridge()
         self.imageRightFound = False
         self.imageLeftFound = False
         self.subRightImage = rp.Subscriber('/cameras/right_hand_camera/image',Image,self._imageRightCallback)
         self.subLeftImage = rp.Subscriber('/cameras/left_hand_camera/image',Image,self._imageLeftCallback)
-        self.subHeadImage = rp.Subscriber('cameras/head_camera/image',Image,self._imageHeadCallback)
+        # self.subHeadImage = rp.Subscriber('cameras/head_camera/image',Image,self._imageHeadCallback)
         img = IMAGE()
-        while not rp.is_shutdown():
+
+
+        # while not rp.is_shutdown():
+        while 1:
+
+
+            print self.imageRightFound , self.imageLeftFound
 
             if self.imageRightFound == True and self.imageLeftFound == True:# and self.imageHeadFound == True:
 
@@ -45,24 +63,31 @@ class baxterImageProcessing(object):
 
                     hsvImage = cv2.cvtColor(self.imageRightData,cv2.COLOR_RGB2HSV_FULL)
 
+
+
+
                     if color == "Red":
-                        upperBounds = 0.
+                        upperBounds = 90.
                         lowerBounds = 0.
                         print 'red'
 
                     elif color == "Green":
-                        upperBounds = 0.
-                        lowerBounds = 0.
+                        upperBounds = 180.
+                        lowerBounds = 91.
                         print 'green'
 
                     elif color == "Blue":
-                        upperBounds = 0.
-                        lowerBounds = 0.
+                        upperBounds = 270.
+                        lowerBounds = 181.
                         print 'blue'
 
                     else:
 
                         print "Color Error"
+
+
+                    print "got right color"
+
 
                     set1 = np.array(np.where(hsvImage[:,:,0] < upperBounds))
                     set2 = np.array(np.where(hsvImage[:,:,0] > lowerBounds))
@@ -74,18 +99,18 @@ class baxterImageProcessing(object):
                     binImg[set1[0,inds],set2[1,inds]] = 1
 
                     binImg = morphology.dilation(morphology.erosion(binImg,selem=morphology.disk(1)),selem=morphology.disk(1))
-
+                    cv2.imshow("Right_Hand", binImg)
                     inds = np.where(binImg == 1)
 
                     try:
                         meanInds = np.mean(inds)
-                        img[RIGHT_ARM].vertical = rows - meanInds[0]
-                        img[RIGHT_ARM].horizontal = cols - meanInds[1]
+                        img.vertical[RIGHT_ARM] = rows - meanInds[0]
+                        img.horizontal[RIGHT_ARM] = cols - meanInds[1]
 
 
                     except:
-                        img[RIGHT_ARM].vertical = []
-                        img[RIGHT_ARM].horizontal = []
+                        img.vertical[RIGHT_ARM] = -1.
+                        img.horizontal[RIGHT_ARM] = -1.
 
                 except:
                     print "image acquisition error RIGHT side - baxterImageProcessing.py"
@@ -96,20 +121,19 @@ class baxterImageProcessing(object):
                     hsvImage = cv2.cvtColor(self.imageLeftData, cv2.COLOR_RGB2HSV_FULL)
 
                     if color == "Red":
-                        upperBounds = 0.
+                        upperBounds = 90.
                         lowerBounds = 0.
                         print 'red'
 
                     elif color == "Green":
-                        upperBounds = 0.
-                        lowerBounds = 0.
+                        upperBounds = 180.
+                        lowerBounds = 91.
                         print 'green'
 
                     elif color == "Blue":
-                        upperBounds = 0.
-                        lowerBounds = 0.
+                        upperBounds = 270.
+                        lowerBounds = 181.
                         print 'blue'
-
                     else:
 
                         print "Color Error"
@@ -125,45 +149,57 @@ class baxterImageProcessing(object):
 
                     binImg = morphology.dilation(morphology.erosion(binImg, selem=morphology.disk(1)),
                                                  selem=morphology.disk(1))
-
+                    cv2.imshow("Left_Hand", binImg)
                     inds = np.where(binImg == 1)
 
                     try:
                         meanInds = np.mean(inds)
-                        img[LEFT_ARM].vertical = rows - meanInds[0]
-                        img[LEFT_ARM].horizontal = cols - meanInds[1]
+                        img.vertical[LEFT_ARM] = rows - meanInds[0]
+                        img.horizontal[LEFT_ARM] = cols - meanInds[1]
 
 
                     except:
-                        img[LEFT_ARM].vertical = []
-                        img[LEFT_ARM].horizontal = []
+                        img.vertical[LEFT_ARM] = -1
+                        img.horizontal[LEFT_ARM] = -1
 
 
 
                 except:
                     print "image acquisition error RIGHT side - baxterImageProcessing.py"
             else:
-                img[LEFT_ARM].vertical = []
-                img[LEFT_ARM].horizontal = []
-                img[RIGHT_ARM].vertical = []
-                img[RIGHT_ARM].horizontal = []
+                img.arm[LEFT_ARM].vertical = -1
+                img.arm[LEFT_ARM].horizontal = -1
+                img.arm[RIGHT_ARM].vertical = -1
+                img.arm[RIGHT_ARM].horizontal = -1
 
-            p.put(img)
+            # p.put(img)
 
-            rate.sleep()
+            time.sleep(.1)
 
 
 
     def _imageRightCallback(self,data):
         try:
-            self.imageRightData = self.bridge.imgmsg_to_cv2(data,"rgb8")
+
+            self.imageRightData = self.bridge.imgmsg_to_cv(data,"rgb8")
+            print "got it"
+            #
+            # def get_img(msg):
+            #     global camera_image
+            #     camera_image = msg_to_cv(msg)
+            #
+            # def msg_to_cv(msg):
+            #     return cv_bridge.CvBridge().imgmsg_to_cv(msg, desired_encoding='bgr8')
+
             self.imageRightFound = True
         except:
             self.imageRightFound = False
 
     def _imageLeftCallback(self,data):
         try:
-            self.imageLeftData = self.bridge.imgmsg_to_cv2(data,"rgb8")
+            # CvBridge().imgmsg_to_cv(msg, desired_encoding='bgr8')  # True
+
+            self.imageLeftData = self.bridge.imgmsg_to_cv(data,"rgb8")
             self.imageLeftFound = True
         except:
             self.imageLeftFound = False
